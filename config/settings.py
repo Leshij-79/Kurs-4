@@ -122,7 +122,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "users.CustomUser"
 # LOGIN_REDIRECT_URL = "catalog:product_list"
 # LOGOUT_REDIRECT_URL = "catalog:product_list"
 
@@ -135,7 +135,7 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-#TODO: Включить при кэшировании
+
 CACHE_ENABLED = False
 
 if CACHE_ENABLED:
