@@ -26,7 +26,7 @@ class Recipients(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="owners",
+        related_name="recipients",
         verbose_name="Владелец получателя",
         help_text="Владелец получателя",
     )
@@ -49,7 +49,7 @@ class Messages(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="owners",
+        related_name="messages",
         verbose_name="Владелец сообщения",
         help_text="Владелец сообщения",
     )
@@ -75,7 +75,7 @@ class Mailing(models.Model):
     message = models.ForeignKey(
         Messages,
         on_delete=models.CASCADE,
-        related_name="mailing",
+        related_name="message",
         verbose_name="Рассылка",
         help_text="Рассылка",
     )
@@ -85,7 +85,7 @@ class Mailing(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="owners",
+        related_name="mailing",
         verbose_name="Владелец рассылки",
         help_text="Владелец рассылки",
     )
@@ -99,8 +99,7 @@ class work_mailing(models.Model):
     mailing = models.ForeignKey(
         Mailing,
         on_delete=models.CASCADE,
-        primary_key=True,
-        related_name="mailing",
+        related_name="work_mailing",
         verbose_name="Рассылка",
         help_text="Рассылка",
     )

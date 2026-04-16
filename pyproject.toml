@@ -24,6 +24,7 @@ pyupgrade = "^3.21.2"
 django = "^6.0.4"
 pandas-stubs = "^3.0.0.260204"
 ipython = "^9.12.0"
+pillow = "^12.2.0"
 
 
 [build-system]
