@@ -31,6 +31,14 @@ class Recipients(models.Model):
         help_text="Владелец получателя",
     )
 
+    class Meta:
+        verbose_name = "Получатель"
+        verbose_name_plural = "Получатели"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
 
 class Messages(models.Model):
     subject = models.CharField(
@@ -53,6 +61,14 @@ class Messages(models.Model):
         verbose_name="Владелец сообщения",
         help_text="Владелец сообщения",
     )
+
+    class Meta:
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
+        ordering = ["subject"]
+
+    def __str__(self):
+        return self.subject
 
 
 class Mailing(models.Model):
@@ -94,8 +110,16 @@ class Mailing(models.Model):
 
     is_active = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "Рассылка"
+        verbose_name_plural = "Рассылки"
+        ordering = ["message"]
 
-class work_mailing(models.Model):
+    def __str__(self):
+        return self.message
+
+
+class WorkMailing(models.Model):
     mailing = models.ForeignKey(
         Mailing,
         on_delete=models.CASCADE,
@@ -115,3 +139,11 @@ class work_mailing(models.Model):
         verbose_name="Ответ сервера",
         help_text="Ответ сервера",
     )
+
+    class Meta:
+        verbose_name = "Состояние рассылки"
+        verbose_name_plural = "Состояние рассылок"
+        ordering = ["mailing"]
+
+    def __str__(self):
+        return self.mailing
