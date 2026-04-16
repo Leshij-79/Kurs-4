@@ -112,7 +112,7 @@ class work_mailing(models.Model):
 
     status = models.BooleanField(default=False)
 
-    server_response = models..TextField(
+    server_response = models.TextField(
         verbose_name="Ответ сервера",
         help_text="Ответ сервера",
     )
