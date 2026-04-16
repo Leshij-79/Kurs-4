@@ -89,10 +89,30 @@ class Mailing(models.Model):
         verbose_name="Владелец рассылки",
         help_text="Владелец рассылки",
     )
-    #TODO: Доделать связь
-    recipients = models.ManyToManyField(
-        Recipients,
 
-    )
+    recipients = models.ManyToManyField(Recipients)
 
     is_active = models.BooleanField(default=True)
+
+
+class work_mailing(models.Model):
+    mailing = models.ForeignKey(
+        Mailing,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="mailing",
+        verbose_name="Рассылка",
+        help_text="Рассылка",
+    )
+
+    attempt_time = models.DateTimeField(
+        verbose_name="Дата и время рассылки",
+        help_text="Дата и время рассылки",
+    )
+
+    status = models.BooleanField(default=False)
+
+    server_response = models..TextField(
+        verbose_name="Ответ сервера",
+        help_text="Ответ сервера",
+    )
