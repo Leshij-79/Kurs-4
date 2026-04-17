@@ -6,3 +6,6 @@ from sending_mail.models import Mailing
 
 class MailingListView(ListView):
     model = Mailing
+    template_name = "mailing_list.html"
+
+
