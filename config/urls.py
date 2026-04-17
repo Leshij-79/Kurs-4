@@ -6,8 +6,8 @@ from config import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("", include("sending_mail.urls", namespace="sending_mail")),
-    # path("users/", include("users.urls", namespace="users")),
+    path("", include("sending_mail.urls", namespace="sending_mail")),
+    path("users/", include("users.urls", namespace="users")),
 ]
 
 # if settings.DEBUG:
