@@ -11,6 +11,7 @@ class Recipients(models.Model):
     )
 
     email = models.EmailField(
+        unique=True,
         verbose_name="email",
         help_text="Email получателя рассылки",
     )

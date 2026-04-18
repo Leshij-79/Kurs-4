@@ -1,6 +1,5 @@
 
 {% extends 'base.html' %}
-{% load tag_filter %}
 {% block title %}Вход пользователя{% endblock %}
 
 {% block content %}
@@ -13,7 +12,8 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit">Войти</button>
+                <button type="submit" class="btn btn-primary">Войти</button>
+                <a role="button" class="btn btn-secondary" href="{% url 'sending_mail:mailing_list' %}">Восстановить пароль</a>
             </form>
         </div>
         <div class="col-1">

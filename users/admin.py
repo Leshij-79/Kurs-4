@@ -9,6 +9,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         "username",
         "email",
+        "avatar",
         "is_staff",
         "is_active",
         "date_joined",

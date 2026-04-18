@@ -123,8 +123,8 @@ STATICFILES_DIRS = [
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
-# LOGIN_REDIRECT_URL = "catalog:product_list"
-# LOGOUT_REDIRECT_URL = "catalog:product_list"
+LOGIN_REDIRECT_URL = "sending_mail:mailing_list"
+LOGOUT_REDIRECT_URL = "sending_mail:mailing_list"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.yandex.ru"
