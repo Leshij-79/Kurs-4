@@ -3,7 +3,8 @@ from django.urls import path
 from users.apps import UsersConfig
 
 from . import views
-from .views import UserLoginView, RegisterView, email_verification, UserProfileView
+from .views import UserLoginView, RegisterView, email_verification, UserProfileView, UserPasswordResetView, \
+   password_confirm
 
 app_name = UsersConfig.name
 
@@ -12,5 +13,8 @@ urlpatterns = [
     path("login/", UserLoginView.as_view(), name="login"),
     path("logout/", views.UserLogoutView, name="logout"),
     path("user/profile/<int:pk>", UserProfileView.as_view(), name="profile"),
-    path("email-confurm/<str:token>/", email_verification, name="email-confirm"),
+    path("email-confirm/<str:token>/", email_verification, name="email-confirm"),
+    path("password_reset/", UserPasswordResetView.as_view(), name="password_reset"),
+    path("password_reset/<str:token>/", password_confirm, name="password_confirm"),
+
 ]

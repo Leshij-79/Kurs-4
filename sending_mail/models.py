@@ -73,6 +73,12 @@ class Messages(models.Model):
 
 
 class Mailing(models.Model):
+    STATUS_CHOICES = [
+        ('created', 'Создана'),
+        ('started', 'Запущена'),
+        ('completed', 'Завершена'),
+    ]
+
     start_time = models.DateTimeField(
         verbose_name="Дата и время начала рассылки",
         help_text="Дата и время начала рассылки",
@@ -85,6 +91,8 @@ class Mailing(models.Model):
 
     status = models.CharField(
         max_length=9,
+        choices=STATUS_CHOICES,
+        default='created',
         verbose_name="Статус рассылки",
         help_text="Статус рассылки",
     )
@@ -121,6 +129,11 @@ class Mailing(models.Model):
 
 
 class WorkMailing(models.Model):
+    STATUS_CHOICES = [
+        ('success', 'Успешно'),
+        ('failed', 'Не успешно'),
+    ]
+
     mailing = models.ForeignKey(
         Mailing,
         on_delete=models.CASCADE,
@@ -134,7 +147,12 @@ class WorkMailing(models.Model):
         help_text="Дата и время рассылки",
     )
 
-    status = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        verbose_name="Статус выполнения рассылки",
+        help_text="Статус выполения рассылки",
+    )
 
     server_response = models.TextField(
         verbose_name="Ответ сервера",

@@ -13,11 +13,14 @@ class CustomAuthenticationForm(StyleFormMixin, AuthenticationForm):
 
 
 class CustomPasswordResetForm(StyleFormMixin, PasswordResetForm):
-    pass
-
+    class Meta:
+        model = CustomUser
+        fields = ("email",)
 
 class CustomPasswordSetForm(StyleFormMixin, SetPasswordForm):
-    pass
+    class Meta:
+        model = CustomUser
+        fields = ("password1", "password2",)
 
 
 class CustomPasswordChangeForm(StyleFormMixin,PasswordChangeForm):
