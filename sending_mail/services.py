@@ -23,3 +23,15 @@ class RecipientsServices:
             return None
 
         return recipients
+
+
+class MailingServices:
+
+    @staticmethod
+    def all_mailing(owner_id):
+        mailing = Mailing.objects.filter(owner=owner_id)
+
+        if not mailing.exists():
+            return None
+
+        return mailing

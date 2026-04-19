@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import BooleanField, forms, ModelForm
 
-from sending_mail.models import Messages, Recipients
+from sending_mail.models import Messages, Recipients, Mailing
 
 
 class StyleFormMixin:
@@ -59,6 +59,39 @@ class RecipientCUForm(StyleFormMixin, ModelForm):
         model = Recipients
         exclude = (
             "owner",
+        )
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+
+        if not name:
+            raise ValidationError("Поле имя не должно быть пустым")
+
+        return name
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+
+        if not email:
+            raise ValidationError("Поле email не должно быть пустым")
+
+        return email
+
+
+class MailingDetailForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = Mailing
+        exclude = (
+            "owner",
+        )
+
+
+class MailingCUForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = Mailing
+        exclude = (
+            "owner",
+            "is_active"
         )
 
     def clean_name(self):

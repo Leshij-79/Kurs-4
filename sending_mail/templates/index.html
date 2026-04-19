@@ -22,15 +22,9 @@
     <div class="container">
         <div class="row text-center">
             {% if user.is_authenticated %}
-                {% if object_list %}
-                    <ul class="list-unstyled text-small">
-                        {% for mailing in object_list %}
-                            <li><a class="text-muted" href="#">{{ mailing.message }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <h1 class="display-4">Нет рассылок</h1>
-                {% endif %}
+
+                <h1 class="display-4">Главная</h1>
+
             {% endif %}
         </div>
         {% include 'footer.html' %}
