@@ -1,4 +1,4 @@
-from sending_mail.models import Messages
+from sending_mail.models import Messages, Recipients
 
 
 class MessagesServices:
@@ -11,3 +11,15 @@ class MessagesServices:
             return None
 
         return messages
+
+
+class RecipientsServices:
+
+    @staticmethod
+    def all_recipients(owner_id):
+        recipients = Recipients.objects.filter(owner=owner_id)
+
+        if not recipients.exists():
+            return None
+
+        return recipients

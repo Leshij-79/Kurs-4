@@ -3,9 +3,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from sending_mail.forms import MessageDetailForm, MessageCUForm
-from sending_mail.models import Mailing, Messages
-from sending_mail.services import MessagesServices
+from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm
+from sending_mail.models import Mailing, Messages, Recipients
+from sending_mail.services import MessagesServices, RecipientsServices
 
 
 class MailingListView(ListView):
@@ -64,3 +64,54 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "messages/message_delete.html"
     success_url = reverse_lazy("sending_mail:messages_list")
 
+
+class RecipientsListView(ListView):
+    model = Recipients
+    template_name = "recipients/recipients_list.html"
+    context_object_name = "all_recipients"
+    success_url = reverse_lazy("sending_mail:mailing_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        owner_id = self.request.user
+        context["all_recipients"] = RecipientsServices.all_recipients(owner_id)
+
+        return context
+
+
+class RecipientDetailView(LoginRequiredMixin, DetailView):
+    model = Recipients
+    form_class = RecipientDetailForm
+    template_name = "recipients/recipient_detail.html"
+    success_url = reverse_lazy("sending_mail:recipients_list")
+
+
+class RecipientCreateView(LoginRequiredMixin, CreateView):
+    model = Recipients
+    form_class = RecipientCUForm
+    template_name = "recipients/recipient_cu.html"
+    success_url = reverse_lazy("sending_mail:recipients_list")
+
+    def form_valid(self, form):
+        message = form.save()
+        user = self.request.user
+        message.owner = user
+        message.save()
+        return super().form_valid(form)
+
+
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
+    model = Recipients
+    form_class = RecipientCUForm
+    template_name = "recipients/recipient_cu.html"
+    success_url = reverse_lazy("sending_mail:recipients_list")
+
+    def get_success_url(self):
+        return reverse("sending_mail:recipient_detail", args=[self.kwargs.get("pk")])
+
+
+class RecipientDeleteView(LoginRequiredMixin, DeleteView):
+    model = Recipients
+    template_name = "recipients/recipient_delete.html"
+    success_url = reverse_lazy("sending_mail:recipients_list")

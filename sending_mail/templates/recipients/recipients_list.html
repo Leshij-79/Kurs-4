@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+{% block title %}Рассылки - Получатели{% endblock %}
+
+{% block content %}
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Рассылки</h1>
+        <p class="lead">Перечень получателей</p>
+    </div>
+    <div class="container">
+        <div class="col-md-2">
+            {% if user.is_authenticated %}
+                <a class="p-2 btn btn-outline-primary" href="recipient_create/">Создать получателя</a>
+            {% endif %}
+        </div>
+        <ul>
+
+        </ul>
+    </div>
+    <div class="container">
+        <div class="row text-center">
+            {% for recipient in object_list %}
+                <div class="col-10">
+                    {% if object_list %}
+                        <li><a class="text-muted" href="{% url 'sending_mail:recipient_detail' recipient.pk %}">{{ recipient }}</a></li>
+                    {% else %}
+                        <h1 class="display-4">Нет получателей</h1>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        {% include 'footer.html' %}
+    </div>
+
+{% endblock %}
