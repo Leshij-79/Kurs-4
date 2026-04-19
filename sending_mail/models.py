@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from users.models import CustomUser
 
@@ -81,12 +82,12 @@ class Mailing(models.Model):
 
     start_time = models.DateTimeField(
         verbose_name="Дата и время начала рассылки",
-        help_text="Дата и время начала рассылки",
+        help_text="ДД.ММ.ГГГГ ЧЧ:ММ",
     )
 
     end_time = models.DateTimeField(
         verbose_name="Дата и время окончания рассылки",
-        help_text="Дата и время окончания рассылки",
+        help_text="ДД.ММ.ГГГГ ЧЧ:ММ",
     )
 
     status = models.CharField(
@@ -115,7 +116,11 @@ class Mailing(models.Model):
         help_text="Владелец рассылки",
     )
 
-    recipients = models.ManyToManyField(Recipients)
+    recipients = models.ManyToManyField(
+        Recipients,
+        verbose_name="Получатели рассылки",
+        help_text="Множественный выбор через CTRL",
+    )
 
     is_active = models.BooleanField(default=True)
 
@@ -126,6 +131,21 @@ class Mailing(models.Model):
 
     def __str__(self):
         return self.message
+
+    def update_status(self):
+        now_data = timezone.now()
+        if now_data < self.start_time:
+            self.status = 'created'
+            self.is_active = False
+            self.save()
+        elif self.start_time < now_data < self.end_time:
+            self.status = "started"
+            self.is_active = True
+            self.save()
+        elif now_data > self.end_time:
+            self.status = "completed"
+            self.is_active = False
+            self.save()
 
 
 class WorkMailing(models.Model):

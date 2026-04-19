@@ -8,23 +8,16 @@
         <h1 class="display-4">Рассылки</h1>
         <p class="lead">Список рассылок</p>
     </div>
-    <div class="container">
-        <div class="col-md-2">
-            {% if user.is_authenticated %}
-                Тут будет ссылка
-<!--                <a class="p-2 btn btn-outline-primary" href="mailing_create/">Создать рассылку</a>-->
-            {% endif %}
-        </div>
-        <ul>
 
-        </ul>
-    </div>
     <div class="container">
         <div class="row text-center">
             {% if user.is_authenticated %}
-
-                <h1 class="display-4">Главная</h1>
-
+                <h1 class="display-6">Количество рассылок всех пользователей: {{ all_mailing }}</h1>
+                <h1 class="display-6">Количество рассылок текущего пользователей: {{ all_mailing_user }}</h1>
+                <h1 class="display-6">Количество активных рассылок всех пользователей: {{ active_mailings }}</h1>
+                <h1 class="display-6">Количество активных рассылок текущего пользователей: {{ active_mailings_user }}</h1>
+                <h1 class="display-6">Количество всех получателей: {{ all_recipients }}</h1>
+                <h1 class="display-6">Количество текущего получателей: {{ all_recipients_user }}</h1>
             {% endif %}
         </div>
         {% include 'footer.html' %}

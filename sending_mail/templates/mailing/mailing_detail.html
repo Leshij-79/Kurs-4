@@ -9,19 +9,27 @@
     </div>
 
     <div class="container">
-        <div class="col-4">
+        <div class="col-1">
         </div>
-        <div class="col-4">
+        <div class="col-10">
             <div class="row text-center">
                 <form>
                     <h1>Сообщение:</h1>
                     <h2 class="my-0 font-weight-normal">{{ mailing.message }}</h2>
                     <h1>Получатели</h1>
-                    <h2>{{ mailing.recipients }}</h2>
+                    <h2>
+                        <ul>
+                            {% for recipient in mailing.recipients.all %}
+                                <li>{{ recipient }}</li>
+                            {% empty %}
+                                <li>Нет получателей</li>
+                            {% endfor %}
+                        </ul>
+                    </h2>
                     <h1>Статус</h1>
-                    <h2>{{ mailing.status }}</h2>
+                    <h2>{{ mailing.get_status_display }}</h2>
                     <h1>Активность</h1>
-                    <h2>{{ mailing.is_active }}</h2>
+                    <h2>{{ mailing.is_active|yesno:"Активна,Не активна" }}</h2>
                     <h1>Дата начала рассылки</h1>
                     <h2>{{ mailing.start_time }}</h2>
                     <h1>Дата окончания рассылки</h1>
@@ -32,7 +40,7 @@
                 </form>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-1">
         </div>
         {% include 'footer.html' %}
     </div>

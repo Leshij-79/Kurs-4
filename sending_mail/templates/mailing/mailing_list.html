@@ -24,7 +24,7 @@
                 {% if object_list %}
                     <ul class="list-unstyled text-small">
                         {% for mailing in object_list %}
-                            <li><a class="text-muted" href="#">{{ mailing.message }}</a></li>
+                            <li><a class="text-muted" href="{% url 'sending_mail:mailing_detail' mailing.pk %}">{{ mailing.message }}</a></li>
                         {% endfor %}
                     </ul>
                 {% else %}

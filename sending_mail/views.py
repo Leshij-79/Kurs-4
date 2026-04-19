@@ -1,17 +1,36 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.models import AnonymousUser
 
 from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm, MailingCUForm, \
     MailingDetailForm
 from sending_mail.models import Mailing, Messages, Recipients
-from sending_mail.services import MessagesServices, RecipientsServices, MailingServices
+from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices
 
 
 class IndexListView(ListView):
     model = Mailing
     template_name = "index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        owner_id = self.request.user
+
+        if isinstance(owner_id, AnonymousUser):
+            context["all_mailing_user"] = []
+            context["all_recipients_user"] = []
+            context["active_mailings_user"] = []
+        else:
+            context["all_mailing_user"] = IndexServices.calculate_all_mailings_user(owner_id)
+            context["all_recipients_user"] = IndexServices.calculate_all_recipients_user(owner_id)
+            context["active_mailings_user"] = IndexServices.calculate_active_mailings_user(owner_id)
+
+        context["all_mailing"] = IndexServices.calculate_all_mailings()
+        context["all_recipients"] = IndexServices.calculate_all_recipients()
+        context["active_mailings"] = IndexServices.calculate_active_mailings()
+
+        return context
 
 
 class MessagesListView(ListView):
@@ -138,6 +157,11 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
     form_class = MailingDetailForm
     template_name = "mailing/mailing_detail.html"
     success_url = reverse_lazy("sending_mail:mailing_list")
+
+    def get_object(self, queryset = None):
+        obj = super().get_object(queryset)
+        obj.update_status()
+        return obj
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
