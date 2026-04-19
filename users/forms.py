@@ -30,7 +30,7 @@ class CustomPasswordChangeForm(StyleFormMixin,PasswordChangeForm):
 class CustomUserCreationForm(StyleFormMixin, UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ("username", "first_name", "last_name", "email", "phone_number", "avatar", "country",)
+        fields = ("username", "first_name", "last_name", "phone_number", "avatar", "country",)
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")

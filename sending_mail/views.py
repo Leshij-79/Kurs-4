@@ -1,7 +1,9 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from sending_mail.forms import MessageDetailForm, MessageCUForm
 from sending_mail.models import Mailing, Messages
 from sending_mail.services import MessagesServices
 
@@ -13,16 +15,52 @@ class MailingListView(ListView):
 
 class MessagesListView(ListView):
     model = Messages
-    template_name = "messages_list.html"
+    template_name = "messages/messages_list.html"
     context_object_name = "all_messages"
-    success_url = reverse_lazy("catalog:product_list")
+    success_url = reverse_lazy("sending_mail:mailing_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        owner_id = self.object.owner
+        owner_id = self.request.user
         context["all_messages"] = MessagesServices.all_messages(owner_id)
 
         return context
 
+
+class MessageDetailView(LoginRequiredMixin, DetailView):
+    model = Messages
+    form_class = MessageDetailForm
+    template_name = "messages/message_detail.html"
+    success_url = reverse_lazy("sending_mail:messages_list")
+
+
+class MessageCreateView(LoginRequiredMixin, CreateView):
+    model = Messages
+    form_class = MessageCUForm
+    template_name = "messages/message_cu.html"
+    success_url = reverse_lazy("sending_mail:messages_list")
+
+    def form_valid(self, form):
+        message = form.save()
+        user = self.request.user
+        message.owner = user
+        message.save()
+        return super().form_valid(form)
+
+
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
+    model = Messages
+    form_class = MessageCUForm
+    template_name = "messages/message_cu.html"
+    success_url = reverse_lazy("sending_mail:messages_list")
+
+    def get_success_url(self):
+        return reverse("sending_mail:message_detail", args=[self.kwargs.get("pk")])
+
+
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
+    model = Messages
+    template_name = "messages/message_delete.html"
+    success_url = reverse_lazy("sending_mail:messages_list")
 

@@ -49,8 +49,8 @@ class Messages(models.Model):
     )
 
     mail_body = models.TextField(
-        verbose_name="Комментарий",
-        help_text="Комментарий",
+        verbose_name="Текст рассылки",
+        help_text="Текст рассылки",
     )
 
     owner = models.ForeignKey(
