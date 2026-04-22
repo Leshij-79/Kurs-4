@@ -37,6 +37,9 @@
                     <a role="button" class="btn btn-primary" href="{% url 'sending_mail:mailing_update' mailing.pk %}">Редактировать</a>
                     <a role="button" class="btn btn-secondory" href="{% url 'sending_mail:mailing_delete' mailing.pk %}">Удалить</a>
                     <a role="button" class="btn btn-secondary" href="{% url 'sending_mail:mailing_list' %}">Назад</a>
+                    {% if mailing.is_active %}
+                        <a role="button" class="btn btn-secondory" href="{% url 'sending_mail:mailing_start' mailing.pk %}">Отправить</a>
+                    {% endif %}
                 </form>
             </div>
         </div>

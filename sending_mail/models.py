@@ -122,7 +122,10 @@ class Mailing(models.Model):
         help_text="Множественный выбор через CTRL",
     )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Активность рассылки"
+    )
 
     class Meta:
         verbose_name = "Рассылка"
@@ -130,7 +133,7 @@ class Mailing(models.Model):
         ordering = ["message"]
 
     def __str__(self):
-        return self.message
+        return self.message.subject
 
     def update_status(self):
         now_data = timezone.now()
@@ -160,6 +163,23 @@ class WorkMailing(models.Model):
         related_name="work_mailing",
         verbose_name="Рассылка",
         help_text="Рассылка",
+    )
+
+    recipient = models.ForeignKey(
+        Recipients,
+        on_delete=models.CASCADE,
+        related_name="work_mailing_recipient",
+        verbose_name="Получатель рассылки",
+    )
+
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="work_mailing_owner",
+        verbose_name="Владелец рассылки",
+        help_text="Владелец рассылки",
     )
 
     attempt_time = models.DateTimeField(

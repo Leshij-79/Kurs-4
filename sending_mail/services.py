@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from sending_mail.models import Messages, Recipients, Mailing
 
 
@@ -35,6 +37,7 @@ class MailingServices:
             return None
 
         return mailing
+
 
 class IndexServices:
     @staticmethod

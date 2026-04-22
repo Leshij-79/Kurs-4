@@ -1,11 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import EmailAttachment, send_mail
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.utils import timezone
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.models import AnonymousUser
 
+from config import settings
 from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm, MailingCUForm, \
     MailingDetailForm
-from sending_mail.models import Mailing, Messages, Recipients
+from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
 from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices
 
 
@@ -192,3 +197,24 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
     template_name = "mailing/mailing_delete.html"
     success_url = reverse_lazy("sending_mail:mailing_list")
+
+
+class MailingStartView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        recipients = mailing.recipients.all()
+
+
+        for recipient in recipients:
+            email_attempt = WorkMailing(mailing=mailing)
+            email_attempt.attempt_time = timezone.now()
+            email_attempt.owner = self.request.user
+            email_attempt.recipient = recipient
+
+            server_response = send_mail(
+                subject=f"mailing.message.subject",
+                message=f"mailing.message.mail_body",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[recipient.email],
+            )
+
