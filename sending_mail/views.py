@@ -1,6 +1,9 @@
+from smtplib import SMTPException
+
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import EmailAttachment, send_mail
-from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.views import View
@@ -148,6 +151,9 @@ class MailingListView(ListView):
     context_object_name = "all_mailing"
     success_url = reverse_lazy("sending_mail:index")
 
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -199,7 +205,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("sending_mail:mailing_list")
 
 
-class MailingStartView(LoginRequiredMixin, View):
+class MailingSendView(LoginRequiredMixin, View):
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
         recipients = mailing.recipients.all()
@@ -210,11 +216,35 @@ class MailingStartView(LoginRequiredMixin, View):
             email_attempt.attempt_time = timezone.now()
             email_attempt.owner = self.request.user
             email_attempt.recipient = recipient
+            email_attempt.mailing = mailing
 
-            server_response = send_mail(
-                subject=f"mailing.message.subject",
-                message=f"mailing.message.mail_body",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[recipient.email],
-            )
+            print("KUKUKUKUKU")
+
+            try:
+                server_response = send_mail(
+                    subject=f"mailing.message.subject",
+                    message=f"mailing.message.mail_body",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[recipient.email],
+                )
+
+                if server_response == 1:
+                    email_attempt.status = "success"
+                    email_attempt.server_response = "Письмо принято SMTP-сервером"
+                else:
+                    email_attempt.status = "failed"
+                    email_attempt.server_response = "Неизвестная ошибка отправки"
+
+            except SMTPException as e:
+                email_attempt.status = "failed"
+                email_attempt.server_response = f"Ошибка SMTP: {str(e)}"
+
+            except Exception as e:
+                email_attempt.status = "failed"
+                email_attempt.server_response = f"Внутренняя ошибка сервера: {str(e)}"
+
+            email_attempt.save()
+
+        messages.success(request, f'Рассылка "{mailing.pk}" была запущена.')
+        return redirect("sending_mail:mailing_list")
 

@@ -195,9 +195,11 @@ class WorkMailing(models.Model):
     )
 
     server_response = models.TextField(
+        blank=True,
         verbose_name="Ответ сервера",
         help_text="Ответ сервера",
     )
+
 
     class Meta:
         verbose_name = "Состояние рассылки"
