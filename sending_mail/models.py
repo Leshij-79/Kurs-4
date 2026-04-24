@@ -207,4 +207,4 @@ class WorkMailing(models.Model):
         ordering = ["mailing"]
 
     def __str__(self):
-        return self.mailing
+        return f"{self.mailing.message.subject} - {self.attempt_time} - {self.recipient.email} - {self.status}"

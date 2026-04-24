@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from sending_mail.models import Messages, Recipients, Mailing
+from sending_mail.models import Messages, Recipients, Mailing, WorkMailing
 
 
 class MessagesServices:
@@ -75,3 +75,15 @@ class IndexServices:
         mailing = Mailing.objects.filter(is_active=True)
 
         return mailing.count() if mailing.exists() else 0
+
+
+class MailingStatServices:
+
+    @staticmethod
+    def all_mailing(owner_id):
+        mailing = WorkMailing.objects.filter(owner=owner_id)
+
+        if not mailing.exists():
+            return None
+
+        return mailing

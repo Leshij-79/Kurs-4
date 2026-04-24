@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% block title %}Рассылки - Статистика{% endblock %}
+
+{% block content %}
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Рассылки</h1>
+        <p class="lead">Статистика рассылок</p>
+    </div>
+
+    <div class="container">
+        <div class="row text-center">
+            {% if user.is_authenticated %}
+                {% if object_list %}
+                    <ul class="list-unstyled text-small">
+                        {% for mailing in object_list %}
+                            <li>
+                                <p>
+                                    {{ mailing.mailing }} - {{ mailing.recipient }} - {{ mailing.attempt_time }} - {{ mailing.get_status_display }} - {{ mailing.server_response }}
+                                </p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <h1 class="display-4">Нет рассылок</h1>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% include 'footer.html' %}
+    </div>
+
+{% endblock %}

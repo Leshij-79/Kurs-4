@@ -13,7 +13,8 @@
         </div>
         <div class="col-10">
             <div class="row text-center">
-                <form>
+                <form method="post" action="{% url 'sending_mail:mailing_send' mailing.pk %}">
+                    {% csrf_token %}
                     <h1>Сообщение:</h1>
                     <h2 class="my-0 font-weight-normal">{{ mailing.message }}</h2>
                     <h1>Получатели</h1>
@@ -38,10 +39,7 @@
                     <a role="button" class="btn btn-secondory" href="{% url 'sending_mail:mailing_delete' mailing.pk %}">Удалить</a>
                     <a role="button" class="btn btn-secondary" href="{% url 'sending_mail:mailing_list' %}">Назад</a>
                     {% if mailing.is_active %}
-                        <form method="post" action="{% url 'sending_mail:mailing_send' mailing.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-secondary">Отправить!</button>
-                        </form>
+                        <button type="submit" class="btn btn-secondary">Отправить!</button>
                     {% endif %}
                 </form>
             </div>

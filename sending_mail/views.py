@@ -12,9 +12,10 @@ from django.contrib.auth.models import AnonymousUser
 
 from config import settings
 from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm, MailingCUForm, \
-    MailingDetailForm
+    MailingDetailForm, MailingStatForm
 from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
-from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices
+from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices, \
+    MailingStatServices
 
 
 class IndexListView(ListView):
@@ -46,6 +47,9 @@ class MessagesListView(ListView):
     template_name = "messages/messages_list.html"
     context_object_name = "all_messages"
     success_url = reverse_lazy("sending_mail:index")
+
+    def get_queryset(self):
+        return Messages.objects.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -98,6 +102,9 @@ class RecipientsListView(ListView):
     template_name = "recipients/recipients_list.html"
     context_object_name = "all_recipients"
     success_url = reverse_lazy("sending_mail:index")
+
+    def get_queryset(self):
+        return Recipients.objects.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -165,6 +172,7 @@ class MailingListView(ListView):
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
+    context_object_name = 'mailing'
     form_class = MailingDetailForm
     template_name = "mailing/mailing_detail.html"
     success_url = reverse_lazy("sending_mail:mailing_list")
@@ -206,6 +214,13 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MailingSendView(LoginRequiredMixin, View):
+    http_method_names = ['post']
+
+    def get(self, request, pk):
+        # Для отладки
+        print(f"GET request to mailing_send with pk={pk}")
+        return redirect("sending_mail:mailing_list")
+
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
         recipients = mailing.recipients.all()
@@ -218,12 +233,10 @@ class MailingSendView(LoginRequiredMixin, View):
             email_attempt.recipient = recipient
             email_attempt.mailing = mailing
 
-            print("KUKUKUKUKU")
-
             try:
                 server_response = send_mail(
-                    subject=f"mailing.message.subject",
-                    message=f"mailing.message.mail_body",
+                    subject=mailing.message.subject,
+                    message=mailing.message.mail_body,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[recipient.email],
                 )
@@ -246,5 +259,23 @@ class MailingSendView(LoginRequiredMixin, View):
             email_attempt.save()
 
         messages.success(request, f'Рассылка "{mailing.pk}" была запущена.')
-        return redirect("sending_mail:mailing_list")
+        return redirect("sending_mail:mailing_detail", pk=mailing.pk)
+
+
+class MailingStatView(LoginRequiredMixin, ListView):
+    model = WorkMailing
+    form_class = MailingStatForm
+    template_name = "mailing/mailing_statistic.html"
+    success_url = reverse_lazy("sending_mail:index")
+
+    def get_queryset(self):
+        return WorkMailing.objects.filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        owner_id = self.request.user
+        context["all_mailing"] = MailingStatServices.all_mailing(owner_id)
+
+        return context
 

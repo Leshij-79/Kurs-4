@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import BooleanField, forms, ModelForm
 
-from sending_mail.models import Messages, Recipients, Mailing
+from sending_mail.models import Messages, Recipients, Mailing, WorkMailing
 
 
 class StyleFormMixin:
@@ -109,3 +109,10 @@ class MailingCUForm(StyleFormMixin, ModelForm):
             raise ValidationError("Поле email не должно быть пустым")
 
         return email
+
+class MailingStatForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = WorkMailing
+        exclude = (
+            "owner",
+        )
