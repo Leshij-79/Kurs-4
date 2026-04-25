@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.models import AnonymousUser
+from icecream import ic
 
 from config import settings
 from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm, MailingCUForm, \
@@ -216,47 +217,11 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 class MailingSendView(LoginRequiredMixin, View):
     http_method_names = ['post']
 
-    def get(self, request, pk):
-        # Для отладки
-        print(f"GET request to mailing_send with pk={pk}")
-        return redirect("sending_mail:mailing_list")
-
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
-        recipients = mailing.recipients.all()
+        email_owner = self.request.user.email
 
-
-        for recipient in recipients:
-            email_attempt = WorkMailing(mailing=mailing)
-            email_attempt.attempt_time = timezone.now()
-            email_attempt.owner = self.request.user
-            email_attempt.recipient = recipient
-            email_attempt.mailing = mailing
-
-            try:
-                server_response = send_mail(
-                    subject=mailing.message.subject,
-                    message=mailing.message.mail_body,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[recipient.email],
-                )
-
-                if server_response == 1:
-                    email_attempt.status = "success"
-                    email_attempt.server_response = "Письмо принято SMTP-сервером"
-                else:
-                    email_attempt.status = "failed"
-                    email_attempt.server_response = "Неизвестная ошибка отправки"
-
-            except SMTPException as e:
-                email_attempt.status = "failed"
-                email_attempt.server_response = f"Ошибка SMTP: {str(e)}"
-
-            except Exception as e:
-                email_attempt.status = "failed"
-                email_attempt.server_response = f"Внутренняя ошибка сервера: {str(e)}"
-
-            email_attempt.save()
+        MailingServices.send_mailing(email_owner, pk)
 
         messages.success(request, f'Рассылка "{mailing.pk}" была запущена.')
         return redirect("sending_mail:mailing_detail", pk=mailing.pk)
