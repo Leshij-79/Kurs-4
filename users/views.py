@@ -28,6 +28,7 @@ class UserLoginView(LoginView):
 def email_verification(request, token):
     user = get_object_or_404(CustomUser, token=token)
     user.is_active = True
+    user.groups.add("Users")
     user.save()
     return redirect(reverse("users:login"))
 

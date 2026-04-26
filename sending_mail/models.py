@@ -37,6 +37,9 @@ class Recipients(models.Model):
         verbose_name = "Получатель"
         verbose_name_plural = "Получатели"
         ordering = ["name"]
+        permissions = [
+            ("can_view_recipient", "Может просматривать получателей"),
+        ]
 
     def __str__(self):
         return self.name
@@ -68,6 +71,9 @@ class Messages(models.Model):
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
         ordering = ["subject"]
+        permissions = [
+            ("can_view_message", "Может просматривать сообщения"),
+        ]
 
     def __str__(self):
         return self.subject
@@ -131,6 +137,10 @@ class Mailing(models.Model):
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
         ordering = ["message"]
+        permissions = [
+            ("can_view_mailing", "Может просматривать рассылки"),
+            ("can_moderated_mailing", "Может модерировать рассылки"),
+        ]
 
     def __str__(self):
         return self.message.subject
