@@ -8,6 +8,9 @@
             <a class="p-2 btn btn-outline-primary" href="{% url 'sending_mail:mailing_list' %}">Рассылки</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'sending_mail:mailing_stat' %}">Статистика</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'users:profile' user.pk %}">Профиль пользователя</a>
+            {% if 'Moderator' in user.groups.all|join:',' %}
+                <a class="p-2 btn btn-outline-primary" href="{% url 'users:users_list' %}">Пользователи</a>
+            {% endif %}
             <a class="p-2 btn btn-outline-primary" href="/users/logout/">Выйти</a>
             {{ user.email }}
         {% else %}

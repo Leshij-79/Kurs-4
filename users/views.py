@@ -2,15 +2,18 @@ import secrets
 
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, UpdateView
+from django.views.generic import FormView, UpdateView, ListView, DetailView
+from icecream import ic
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import CustomAuthenticationForm, CustomUserCreationForm, CustomUserProfileForm, \
-    CustomPasswordResetForm, CustomPasswordSetForm
+    CustomPasswordResetForm, CustomPasswordSetForm, UsersListForm
 from users.models import CustomUser
 
 
@@ -109,3 +112,44 @@ def password_confirm(request, token):
 
     template_name = "password_reset_confirm.html"
     return render(request, template_name, {"form": form})
+
+
+class UsersListView(LoginRequiredMixin, ListView):
+    template_name = "users_list.html"
+    form_class = UsersListForm
+    context_object_name = "objects_list"
+    success_url = reverse_lazy("sending_mail:index")
+
+    def get_queryset(self):
+        queryset = CustomUser.objects.all()
+        user = self.request.user
+
+        if user.groups.filter(name="Moderator").exists():
+            return queryset.exclude(pk=user.pk)
+
+        raise PermissionDenied("У вас недостаточно прав")
+        return queryset.none()
+
+
+class UserDetailView(LoginRequiredMixin, DetailView):
+    model = CustomUser
+    template_name = "user_detail.html"
+    context_object_name = "user_detail"
+    form_class = UsersListForm
+    success_url = reverse_lazy("users:users_list")
+
+
+def user_diactive(request, pk):
+    user = get_object_or_404(CustomUser, pk=pk)
+    user.is_active = False
+    user.save()
+    return redirect(reverse("users:user_detail", args=[pk]))
+
+def user_active(request, pk):
+    user = get_object_or_404(CustomUser, pk=pk)
+    user.is_active = True
+    user.save()
+    return redirect(reverse("users:user_detail", args=[pk]))
+
+
+

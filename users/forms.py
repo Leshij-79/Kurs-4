@@ -45,3 +45,9 @@ class CustomUserProfileForm(StyleFormMixin, ModelForm):
     class Meta:
         model = CustomUser
         fields = ("username", "first_name", "last_name", "phone_number", "country", "avatar",)
+
+
+class UsersListForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ("username", "email",)
