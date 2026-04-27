@@ -35,10 +35,15 @@
                     <h2>{{ mailing.start_time }}</h2>
                     <h1>Дата окончания рассылки</h1>
                     <h2>{{ mailing.end_time }}</h2>
-                    <a role="button" class="btn btn-primary" href="{% url 'sending_mail:mailing_update' mailing.pk %}">Редактировать</a>
-                    <a role="button" class="btn btn-secondory" href="{% url 'sending_mail:mailing_delete' mailing.pk %}">Удалить</a>
+                    {% if user == mailing.owner %}
+                        <a role="button" class="btn btn-primary" href="{% url 'sending_mail:mailing_update' mailing.pk %}">Редактировать</a>
+                        <a role="button" class="btn btn-secondory" href="{% url 'sending_mail:mailing_delete' mailing.pk %}">Удалить</a>
+                    {% endif %}
+                    {% if 'Moderator' in user.groups.all|join:',' %}
+                        <a role="button" class="btn btn-primary" href="{% url 'sending_mail:mailing_diactive' mailing.pk %}">Диактивировать</a>
+                    {% endif %}
                     <a role="button" class="btn btn-secondary" href="{% url 'sending_mail:mailing_list' %}">Назад</a>
-                    {% if mailing.is_active %}
+                    {% if mailing.is_active and user == mailing.owner %}
                         <button type="submit" class="btn btn-secondary">Отправить!</button>
                     {% endif %}
                 </form>

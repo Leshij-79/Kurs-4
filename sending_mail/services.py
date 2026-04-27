@@ -1,5 +1,6 @@
 from smtplib import SMTPException
 
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.utils import timezone
 
@@ -132,3 +133,23 @@ class MailingStatServices:
             return None
 
         return mailing
+
+
+def get_index_cached(cache_key, cache_timeout):
+    index = cache.get(cache_key)
+
+    if index is None:
+        index = Mailing.objects.all()
+        cache.set(cache_key, index, cache_timeout)
+
+    return index
+
+
+def get_messages_cached(cache_key, cache_timeout):
+    messages = cache.get(cache_key)
+
+    if messages is None:
+        messages = Mailing.objects.all()
+        cache.set(cache_key, messages, cache_timeout)
+
+    return messages

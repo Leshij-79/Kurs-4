@@ -6,7 +6,9 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.models import AnonymousUser
 from icecream import ic
@@ -16,12 +18,16 @@ from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetail
     MailingDetailForm, MailingStatForm
 from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
 from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices, \
-    MailingStatServices
+    MailingStatServices, get_index_cached, get_messages_cached
 
 
 class IndexListView(ListView):
     model = Mailing
     template_name = "index.html"
+
+    def get_queryset(self):
+        return get_index_cached("index", 60)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -57,6 +63,9 @@ class MessagesListView(ListView):
 
         owner_id = self.request.user
         context["all_messages"] = MessagesServices.all_messages(owner_id)
+
+        cached_value = get_messages_cached("messageslist", 60)
+        context["cached_data"] = cached_value
 
         return context
 
@@ -104,8 +113,21 @@ class RecipientsListView(ListView):
     context_object_name = "all_recipients"
     success_url = reverse_lazy("sending_mail:index")
 
+    @method_decorator(cache_page(60, key_prefix="recipients:list"), name="r_list")
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
-        return Recipients.objects.filter(owner=self.request.user)
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user.is_authenticated and not user.groups.filter(name="Moderator").exists():
+            return Recipients.objects.filter(owner=user)
+
+        if user.is_authenticated and user.groups.filter(name="Moderator").exists():
+            return queryset
+
+        return self.model.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -153,6 +175,7 @@ class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("sending_mail:recipients_list")
 
 
+@method_decorator(cache_page(60), name="dispatch")
 class MailingListView(ListView):
     model = Mailing
     template_name = "mailing/mailing_list.html"
@@ -160,7 +183,18 @@ class MailingListView(ListView):
     success_url = reverse_lazy("sending_mail:index")
 
     def get_queryset(self):
-        return Mailing.objects.filter(owner=self.request.user)
+
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user.is_authenticated and not user.groups.filter(name="Moderator").exists():
+            return Mailing.objects.filter(owner=user)
+
+        if user.is_authenticated and user.groups.filter(name="Moderator").exists():
+            return queryset
+
+        return self.model.objects.none()
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -244,3 +278,10 @@ class MailingStatView(LoginRequiredMixin, ListView):
 
         return context
 
+
+def mailing_diactive(request, pk):
+    mailing = get_object_or_404(Mailing, pk=pk)
+    mailing.end_time = timezone.now()
+    mailing.is_active = False
+    mailing.save()
+    return redirect(reverse("sending_mail:mailing_detail", args=[pk]))
