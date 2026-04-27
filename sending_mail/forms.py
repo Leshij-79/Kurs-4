@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
-from django.forms import BooleanField, forms, ModelForm
+from django.forms import BooleanField, ModelForm
 
-from sending_mail.models import Messages, Recipients, Mailing, WorkMailing
+from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
 
 
 class StyleFormMixin:
@@ -17,17 +17,13 @@ class StyleFormMixin:
 class MessageDetailForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Messages
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)
 
 
 class MessageCUForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Messages
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)
 
     def clean_subject(self):
         subject = self.cleaned_data["subject"]
@@ -49,17 +45,13 @@ class MessageCUForm(StyleFormMixin, ModelForm):
 class RecipientDetailForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Recipients
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)
 
 
 class RecipientCUForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Recipients
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)
 
     def clean_name(self):
         name = self.cleaned_data["name"]
@@ -81,18 +73,13 @@ class RecipientCUForm(StyleFormMixin, ModelForm):
 class MailingDetailForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Mailing
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)
 
 
 class MailingCUForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Mailing
-        exclude = (
-            "owner",
-            "is_active"
-        )
+        exclude = ("owner", "is_active")
 
     def clean_name(self):
         name = self.cleaned_data["name"]
@@ -110,9 +97,8 @@ class MailingCUForm(StyleFormMixin, ModelForm):
 
         return email
 
+
 class MailingStatForm(StyleFormMixin, ModelForm):
     class Meta:
         model = WorkMailing
-        exclude = (
-            "owner",
-        )
+        exclude = ("owner",)

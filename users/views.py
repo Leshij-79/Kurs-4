@@ -6,14 +6,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, UpdateView, ListView, DetailView
-from icecream import ic
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, FormView, ListView, UpdateView
 
 from config.settings import EMAIL_HOST_USER
-from users.forms import CustomAuthenticationForm, CustomUserCreationForm, CustomUserProfileForm, \
-    CustomPasswordResetForm, CustomPasswordSetForm, UsersListForm
+from users.forms import (CustomAuthenticationForm, CustomPasswordResetForm, CustomPasswordSetForm,
+                         CustomUserCreationForm, CustomUserProfileForm, UsersListForm)
 from users.models import CustomUser
 
 
@@ -145,11 +144,9 @@ def user_diactive(request, pk):
     user.save()
     return redirect(reverse("users:user_detail", args=[pk]))
 
+
 def user_active(request, pk):
     user = get_object_or_404(CustomUser, pk=pk)
     user.is_active = True
     user.save()
     return redirect(reverse("users:user_detail", args=[pk]))
-
-
-

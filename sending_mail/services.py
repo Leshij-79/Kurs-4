@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 
 from config import settings
-from sending_mail.models import Messages, Recipients, Mailing, WorkMailing
+from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
 from users.models import CustomUser
 
 

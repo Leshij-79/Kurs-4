@@ -81,9 +81,9 @@ class Messages(models.Model):
 
 class Mailing(models.Model):
     STATUS_CHOICES = [
-        ('created', 'Создана'),
-        ('started', 'Запущена'),
-        ('completed', 'Завершена'),
+        ("created", "Создана"),
+        ("started", "Запущена"),
+        ("completed", "Завершена"),
     ]
 
     start_time = models.DateTimeField(
@@ -99,7 +99,7 @@ class Mailing(models.Model):
     status = models.CharField(
         max_length=9,
         choices=STATUS_CHOICES,
-        default='created',
+        default="created",
         verbose_name="Статус рассылки",
         help_text="Статус рассылки",
     )
@@ -128,10 +128,7 @@ class Mailing(models.Model):
         help_text="Множественный выбор через CTRL",
     )
 
-    is_active = models.BooleanField(
-        default=True,
-        verbose_name="Активность рассылки"
-    )
+    is_active = models.BooleanField(default=True, verbose_name="Активность рассылки")
 
     class Meta:
         verbose_name = "Рассылка"
@@ -148,7 +145,7 @@ class Mailing(models.Model):
     def update_status(self):
         now_data = timezone.now()
         if now_data < self.start_time:
-            self.status = 'created'
+            self.status = "created"
             self.is_active = False
             self.save()
         elif self.start_time < now_data < self.end_time:
@@ -163,8 +160,8 @@ class Mailing(models.Model):
 
 class WorkMailing(models.Model):
     STATUS_CHOICES = [
-        ('success', 'Успешно'),
-        ('failed', 'Не успешно'),
+        ("success", "Успешно"),
+        ("failed", "Не успешно"),
     ]
 
     mailing = models.ForeignKey(
@@ -209,7 +206,6 @@ class WorkMailing(models.Model):
         verbose_name="Ответ сервера",
         help_text="Ответ сервера",
     )
-
 
     class Meta:
         verbose_name = "Состояние рассылки"

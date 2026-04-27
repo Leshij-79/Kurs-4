@@ -1,24 +1,20 @@
-from smtplib import SMTPException
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.cache import cache_page
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-from django.contrib.auth.models import AnonymousUser
-from icecream import ic
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from config import settings
-from sending_mail.forms import MessageDetailForm, MessageCUForm, RecipientDetailForm, RecipientCUForm, MailingCUForm, \
-    MailingDetailForm, MailingStatForm
+from sending_mail.forms import (MailingCUForm, MailingDetailForm, MailingStatForm, MessageCUForm, MessageDetailForm,
+                                RecipientCUForm, RecipientDetailForm)
 from sending_mail.models import Mailing, Messages, Recipients, WorkMailing
-from sending_mail.services import MessagesServices, RecipientsServices, MailingServices, IndexServices, \
-    MailingStatServices, get_index_cached, get_messages_cached
+from sending_mail.services import (IndexServices, MailingServices, MailingStatServices, MessagesServices,
+                                   RecipientsServices, get_index_cached, get_messages_cached)
 
 
 class IndexListView(ListView):
@@ -27,7 +23,6 @@ class IndexListView(ListView):
 
     def get_queryset(self):
         return get_index_cached("index", 60)
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -195,7 +190,6 @@ class MailingListView(ListView):
 
         return self.model.objects.none()
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -207,12 +201,12 @@ class MailingListView(ListView):
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
-    context_object_name = 'mailing'
+    context_object_name = "mailing"
     form_class = MailingDetailForm
     template_name = "mailing/mailing_detail.html"
     success_url = reverse_lazy("sending_mail:mailing_list")
 
-    def get_object(self, queryset = None):
+    def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         obj.update_status()
         return obj
@@ -249,7 +243,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MailingSendView(LoginRequiredMixin, View):
-    http_method_names = ['post']
+    http_method_names = ["post"]
 
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
