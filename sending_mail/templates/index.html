@@ -1,0 +1,26 @@
+
+{% extends 'base.html' %}
+{% block title %}Рассылки - Главная{% endblock %}
+
+{% block content %}
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Рассылки</h1>
+        <p class="lead">Список рассылок</p>
+    </div>
+
+    <div class="container">
+        <div class="row text-center">
+            {% if user.is_authenticated %}
+                <h1 class="display-6">Количество рассылок всех пользователей: {{ all_mailing }}</h1>
+                <h1 class="display-6">Количество рассылок текущего пользователей: {{ all_mailing_user }}</h1>
+                <h1 class="display-6">Количество активных рассылок всех пользователей: {{ active_mailings }}</h1>
+                <h1 class="display-6">Количество активных рассылок текущего пользователей: {{ active_mailings_user }}</h1>
+                <h1 class="display-6">Количество всех получателей: {{ all_recipients }}</h1>
+                <h1 class="display-6">Количество текущего получателей: {{ all_recipients_user }}</h1>
+            {% endif %}
+        </div>
+        {% include 'footer.html' %}
+    </div>
+
+{% endblock %}
