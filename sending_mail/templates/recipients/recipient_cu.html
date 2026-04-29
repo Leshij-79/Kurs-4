@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+{% block title %}Получатель{% endblock %}
+
+{% block content %}
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Рассылки</h1>
+        {% if object %}
+            <p class="lead">Редактирование {{ recipient.name }}</p>
+        {% else %}
+            <p class="lead"></p>
+            <p class="lead">Создание получателя</p>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="col-1">
+        </div>
+        <div class="col-12">
+            <div class="row text-center">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <a role="button" class="btn btn-secondary" href="{% url 'sending_mail:recipients_list' %}">Назад</a>
+                </form>
+            </div>
+        </div>
+        <div class="col-1">
+        </div>
+        {% include 'footer.html' %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+
+{% extends 'base.html' %}
+{% block title %}Удаление рассылки{% endblock %}
+
+{% block content %}
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+         <h1 class="display-4">Рассылки</h1>
+    </div>
+
+    <div class="container">
+        <div class="col-1">
+        </div>
+        <div class="col-12">
+            <div class="row text-center">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="col-md-12">
+                        <div class ="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                            <div class="col p-4 d-flex flex-column position-static">
+                                <h1 class="my-0 font-weight-normal">{{ mailing.message }}</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                        <h4 class="display-4">Вы действительно хотите удалить рассылку?</h4>
+                    </p>
+                    <button type="submit" class="btn btn-secondary">Удалить</button>
+                    <a role="button" class="btn btn-primary" href="{% url 'sending_mail:mailing_detail' mailing.pk %}">Назад</a>
+                </form>
+            </div>
+        </div>
+        <div class="col-1">
+        </div>
+        {% include 'footer.html' %}
+    </div>
+
+{% endblock %}
+
+
+
+
+
